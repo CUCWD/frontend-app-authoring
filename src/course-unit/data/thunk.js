@@ -119,6 +119,7 @@ export function editCourseItemQuery(itemId, displayName, sequenceId) {
   };
 }
 
+// Added the estimated time parameters to the editCourseUnitVisibilityAndData thunk function
 export function editCourseUnitVisibilityAndData(
   itemId,
   type,
@@ -126,6 +127,9 @@ export function editCourseUnitVisibilityAndData(
   groupAccess,
   isDiscussionEnabled,
   callback,
+  estimatedTime,
+  displayEstimatedTime,
+  overrideEstimatedTime,
   blockId = itemId,
 ) {
   return async (dispatch) => {
@@ -141,6 +145,9 @@ export function editCourseUnitVisibilityAndData(
         isVisible,
         groupAccess,
         isDiscussionEnabled,
+        estimatedTime,
+        displayEstimatedTime,
+        overrideEstimatedTime,
       ).then(async (result) => {
         if (result) {
           if (callback) {

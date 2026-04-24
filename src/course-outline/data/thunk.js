@@ -279,6 +279,7 @@ export function configureCourseSectionQuery(sectionId, isVisibleToStaffOnly, sta
   };
 }
 
+// Added the estimated time variables to configureCourseSubsectionQuery
 export function configureCourseSubsectionQuery(
   itemId,
   sectionId,
@@ -298,6 +299,9 @@ export function configureCourseSubsectionQuery(
   prereqUsageKey,
   prereqMinScore,
   prereqMinCompletion,
+  estimatedTime,
+  displayEstimatedTime,
+  overrideEstimatedTime,
 ) {
   return async (dispatch) => {
     dispatch(configureCourseItemQuery(
@@ -320,16 +324,37 @@ export function configureCourseSubsectionQuery(
         prereqUsageKey,
         prereqMinScore,
         prereqMinCompletion,
+        estimatedTime,
+        displayEstimatedTime,
+        overrideEstimatedTime,
       ),
     ));
   };
 }
 
-export function configureCourseUnitQuery(itemId, sectionId, isVisibleToStaffOnly, groupAccess, discussionEnabled) {
+// Added the estimated time variables to configureCourseUnitQuery
+export function configureCourseUnitQuery(
+  itemId,
+  sectionId,
+  isVisibleToStaffOnly,
+  groupAccess,
+  discussionEnabled,
+  estimatedTime,
+  displayEstimatedTime,
+  overrideEstimatedTime,
+) {
   return async (dispatch) => {
     dispatch(configureCourseItemQuery(
       sectionId,
-      async () => configureCourseUnit(itemId, isVisibleToStaffOnly, groupAccess, discussionEnabled),
+      async () => configureCourseUnit(
+        itemId,
+        isVisibleToStaffOnly,
+        groupAccess,
+        discussionEnabled,
+        estimatedTime,
+        displayEstimatedTime,
+        overrideEstimatedTime,
+      ),
     ));
   };
 }
