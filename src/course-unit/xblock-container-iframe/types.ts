@@ -36,6 +36,10 @@ export interface XBlockTypes {
   validationMessages: any[];
   renderError: string;
   id: string;
+  // Added the estimated time variables into the xBlock data types.
+  estimatedTime?: string;
+  showEstimatedTime?: boolean;
+  overrideEstimatedTime?: boolean;
 }
 
 export interface XBlockContainerIframeProps {
@@ -107,6 +111,11 @@ export type AccessManagedXBlockDataTypes = {
   showReviewRules?: boolean;
   onlineProctoringRules?: string;
   discussionEnabled: boolean;
+  // Added the estimated time variables into the access managed xBlock data types.
+  estimatedTime?: string;
+  showEstimatedTime?: boolean;
+  overrideEstimatedTime?: boolean;
+  courseShowEstimatedTime?: boolean;
 };
 
 export type FormattedAccessManagedXBlockDataTypes = Omit<AccessManagedXBlockDataTypes, 'discussionEnabled'>;
