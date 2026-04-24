@@ -98,7 +98,21 @@ const XBlockContainerIframe: FC<XBlockContainerIframeProps> = ({
     closeXBlockEditorModal();
     closeVideoSelectorModal();
     sendMessageToIframe(messageTypes.refreshXBlock, null);
-  }, [closeXBlockEditorModal, closeVideoSelectorModal, sendMessageToIframe]);
+    // After saving an XBlock, we need to refresh the sidebar data and potentially the vertical data 
+    // if the unit is not a vertical type. This ensures that any changes made to the XBlock are reflected 
+    // in the sidebar and that the vertical layout is updated if necessary.
+    dispatch(updateCourseUnitSidebar(blockId));
+    if (!isUnitVerticalType) {
+      dispatch(fetchCourseSectionVerticalData(blockId));
+    }
+  }, [
+    closeXBlockEditorModal,
+    closeVideoSelectorModal,
+    sendMessageToIframe,
+    dispatch,
+    blockId,
+    isUnitVerticalType,
+  ]);
 
   const handleEditXBlock = useCallback((type: string, id: string) => {
     setBlockType(type);
