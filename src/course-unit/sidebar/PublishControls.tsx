@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { useToggle } from '@openedx/paragon';
-import { InfoOutline as InfoOutlineIcon } from '@openedx/paragon/icons';
+import { Icon, Stack, useToggle } from '@openedx/paragon';
+import { AccessTime, InfoOutline as InfoOutlineIcon } from '@openedx/paragon/icons';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import useCourseUnitData from './hooks';
 import { useIframe } from '../../generic/hooks/context/hooks';
@@ -10,6 +10,31 @@ import { PUBLISH_TYPES, messageTypes } from '../constants';
 import { getCourseUnitData } from '../data/selectors';
 import messages from './messages';
 import ModalNotification from '../../generic/modal-notification';
+import configureModalMessages from '../../generic/configure-modal/messages';
+
+// Helper function that converts estimated time from the "HH:MM:SS" format to "X hours and Y minutes" or "Z minutes".
+const formatEstimatedTime = (estimatedTime?: string) => {
+  if (!estimatedTime || estimatedTime === '00:00:00') {
+    return null;
+  }
+  const [hours = '0', minutes = '0', seconds = '0'] = estimatedTime.split(':');
+  const totalMinutes = Math.ceil(((
+    (Number.parseInt(hours, 10) || 0) * 3600
+  ) + (
+    (Number.parseInt(minutes, 10) || 0) * 60
+  ) + (
+    Number.parseInt(seconds, 10) || 0
+  )) / 60);
+  if (totalMinutes <= 0) {
+    return null;
+  }
+  if (totalMinutes >= 60) {
+    const totalHours = Math.floor(totalMinutes / 60);
+    const remainingMinutes = totalMinutes % 60;
+    return `${totalHours} hour${totalHours !== 1 ? 's' : ''} and ${remainingMinutes} minute${remainingMinutes !== 1 ? 's' : ''}`;
+  }
+  return `${totalMinutes} minute${totalMinutes !== 1 ? 's' : ''}`;
+};
 
 interface PublishControlsProps {
   blockId?: string,
@@ -24,6 +49,8 @@ const PublishControls = ({ blockId }: PublishControlsProps) => {
     visibilityState,
     visibleToStaffOnly,
   } = useCourseUnitData(unitData);
+  // Format the estimated time for display in the sidebar
+  const estimatedTime = formatEstimatedTime(unitData.estimatedTime);
   const intl = useIntl();
   const { sendMessageToIframe } = useIframe();
 
@@ -63,6 +90,19 @@ const PublishControls = ({ blockId }: PublishControlsProps) => {
         releaseLabel={releaseLabel}
         visibleToStaffOnly={visibleToStaffOnly}
       />
+      {/* Format the estimated time for display in the sidebar */}
+      {unitData.showEstimatedTime && estimatedTime && (
+        <Stack gap={1} className="px-3 pb-3 course-unit-sidebar-estimated-time text-primary-700">
+          <Stack direction="horizontal" gap={1}>
+            <Icon src={AccessTime} />
+            <span className="course-unit-sidebar-estimated-time__text">
+              {intl.formatMessage(configureModalMessages.estimatedTimeTitle)}:
+              {' '}
+              <em>{estimatedTime}</em>
+            </span>
+          </Stack>
+        </Stack>
+      )}
       <SidebarFooter
         locationId={locationId}
         openDiscardModal={openDiscardModal}

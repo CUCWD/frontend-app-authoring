@@ -82,6 +82,15 @@
     }
   }
 
+  // Styles for the estimated time display in the sidebar
+  .course-unit-sidebar-estimated-time {
+    @extend %base-font-params;
+
+    .course-unit-sidebar-estimated-time__text {
+      @extend %base-font-params;
+    }
+  }
+
   .course-split-test-sidebar {
     padding: var(--pgn-spacing-spacer-base);
 
