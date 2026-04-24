@@ -2,3 +2,9 @@
   font-size: var(--pgn-typography-font-size-sm);
   font-weight: var(--pgn-typography-font-weight-normal);
 }
+
+// Styles for the estimated time display in the header title
+.header-title__estimated-time {
+  font-size: var(--pgn-typography-font-size-sm);
+  font-weight: var(--pgn-typography-font-weight-normal);
+}
