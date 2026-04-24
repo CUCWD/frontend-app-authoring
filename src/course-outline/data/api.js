@@ -255,6 +255,12 @@ export async function configureCourseSection(sectionId, isVisibleToStaffOnly, st
  * @param {string} prereqUsageKey,
  * @param {number} prereqMinScore,
  * @param {number} prereqMinCompletion,
+ * *******************************
+ * Added estimated time parameters
+ * *******************************
+ * @param {string} estimatedTime,
+ * @param {boolean} displayEstimatedTime,
+ * @param {boolean} overrideEstimatedTime,
  * @returns {Promise<Object>}
  */
 export async function configureCourseSubsection(
@@ -275,6 +281,9 @@ export async function configureCourseSubsection(
   prereqUsageKey,
   prereqMinScore,
   prereqMinCompletion,
+  estimatedTime,
+  displayEstimatedTime,
+  overrideEstimatedTime,
 ) {
   const { data } = await getAuthenticatedHttpClient()
     .post(getCourseItemApiUrl(itemId), {
@@ -290,6 +299,9 @@ export async function configureCourseSubsection(
         due: dueDate,
         hide_after_due: hideAfterDue,
         show_correctness: showCorrectness,
+        estimated_time: estimatedTime,
+        show_estimated_time: displayEstimatedTime,
+        override_estimated_time: overrideEstimatedTime,
         is_practice_exam: isPracticeExam,
         is_time_limited: isTimeLimited,
         is_proctored_enabled: isProctoredExam || isPracticeExam || isOnboardingExam,
@@ -307,9 +319,23 @@ export async function configureCourseSubsection(
  * @param {string} unitId
  * @param {boolean} isVisibleToStaffOnly
  * @param {object} groupAccess
+ * *******************************
+ * Added estimated time parameters
+ * *******************************
+ * @param {string} estimatedTime
+ * @param {boolean} displayEstimatedTime
+ * @param {boolean} overrideEstimatedTime
  * @returns {Promise<Object>}
  */
-export async function configureCourseUnit(unitId, isVisibleToStaffOnly, groupAccess, discussionEnabled) {
+export async function configureCourseUnit(
+  unitId,
+  isVisibleToStaffOnly,
+  groupAccess,
+  discussionEnabled,
+  estimatedTime,
+  displayEstimatedTime,
+  overrideEstimatedTime,
+) {
   const { data } = await getAuthenticatedHttpClient()
     .post(getCourseItemApiUrl(unitId), {
       publish: 'republish',
@@ -318,6 +344,9 @@ export async function configureCourseUnit(unitId, isVisibleToStaffOnly, groupAcc
         visible_to_staff_only: isVisibleToStaffOnly ? true : null,
         group_access: groupAccess,
         discussion_enabled: discussionEnabled,
+        estimated_time: estimatedTime,
+        show_estimated_time: displayEstimatedTime,
+        override_estimated_time: overrideEstimatedTime,
       },
     });
 

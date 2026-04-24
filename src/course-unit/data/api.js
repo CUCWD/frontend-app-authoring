@@ -102,9 +102,24 @@ export async function createCourseXblock({
  * @param {boolean} isVisible - The visibility status for students.
  * @param {boolean} groupAccess - Access group key set.
  * @param {boolean} isDiscussionEnabled - Indicates whether the discussion feature is enabled.
+ * *******************************
+ * Added estimated time parameters
+ * *******************************
+ * @param {string} estimatedTime
+ * @param {boolean} displayEstimatedTime
+ * @param {boolean} overrideEstimatedTime
  * @returns {Promise<any>} A promise that resolves with the response data.
  */
-export async function handleCourseUnitVisibilityAndData(unitId, type, isVisible, groupAccess, isDiscussionEnabled) {
+export async function handleCourseUnitVisibilityAndData(
+  unitId,
+  type,
+  isVisible,
+  groupAccess,
+  isDiscussionEnabled,
+  estimatedTime,
+  displayEstimatedTime,
+  overrideEstimatedTime,
+) {
   const body = {
     publish: groupAccess ? null : type,
     ...(type === PUBLISH_TYPES.republish ? {
@@ -112,6 +127,9 @@ export async function handleCourseUnitVisibilityAndData(unitId, type, isVisible,
         visible_to_staff_only: isVisible ? true : null,
         group_access: groupAccess || null,
         discussion_enabled: isDiscussionEnabled,
+        estimated_time: estimatedTime,
+        show_estimated_time: displayEstimatedTime,
+        override_estimated_time: overrideEstimatedTime,
       },
     } : {}),
   };
