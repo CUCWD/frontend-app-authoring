@@ -90,7 +90,21 @@ export const useCourseUnit = ({ courseId, blockId }) => {
     dispatch(changeEditTitleFormOpen(!isTitleEditFormOpen));
   };
 
-  const handleConfigureSubmit = (id, isVisible, groupAccess, isDiscussionEnabled, closeModalFn) => {
+  /**
+   * Modified handleConfigureSubmit to include estimated time parameters and pass them 
+   * to the editCourseUnitVisibilityAndData thunk action. This allows the estimated time 
+   * to be updated in the course unit data when the configure modal form is submitted.
+  **/
+  const handleConfigureSubmit = (
+    id,
+    isVisible,
+    groupAccess,
+    isDiscussionEnabled,
+    estimatedTime,
+    displayEstimatedTime,
+    overrideEstimatedTime,
+    closeModalFn,
+  ) => {
     dispatch(editCourseUnitVisibilityAndData(
       id,
       PUBLISH_TYPES.republish,
@@ -98,6 +112,9 @@ export const useCourseUnit = ({ courseId, blockId }) => {
       groupAccess,
       isDiscussionEnabled,
       () => sendMessageToIframe(messageTypes.completeManageXBlockAccess, { locator: id }),
+      estimatedTime,
+      displayEstimatedTime,
+      overrideEstimatedTime,
       blockId,
     ));
     if (typeof closeModalFn === 'function') {
