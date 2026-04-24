@@ -7,7 +7,7 @@ import {
   Icon,
 } from '@openedx/paragon';
 import classNames from 'classnames';
-import DatePicker from 'react-datepicker/dist';
+import DatePicker from 'react-datepicker';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import { Calendar as CalendarIcon, Error as ErrorIcon } from '@openedx/paragon/icons';
 import { Formik } from 'formik';

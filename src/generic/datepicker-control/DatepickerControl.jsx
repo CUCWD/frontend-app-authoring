@@ -1,5 +1,5 @@
 import React from 'react';
-import DatePicker from 'react-datepicker/dist';
+import DatePicker from 'react-datepicker'; // Added import for the DatePicker component used in the DatepickerControl component.
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { Form, Icon } from '@openedx/paragon';

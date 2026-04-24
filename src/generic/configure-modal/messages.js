@@ -307,6 +307,43 @@ const messages = defineMessages({
     id: 'course-authoring.course-outline.configure-modal.advanced-tab.reviewRulesDescriptionLinkText',
     defaultMessage: 'general proctored exam rules',
   },
+  // New Estimated time messages that are added in UnitTab
+  estimatedTimeTitle: {
+    id: 'course-authoring.course-outline.configure-modal.estimated-time.title',
+    defaultMessage: 'Estimated time to complete',
+  },
+  estimatedTimeDescription: {
+    id: 'course-authoring.course-outline.configure-modal.estimated-time.description',
+    defaultMessage: 'Estimated Time (HH:MM:SS)',
+  },
+  estimatedTimeHelp: {
+    id: 'course-authoring.course-outline.configure-modal.estimated-time.label',
+    defaultMessage: 'If not overridden, the estimated time per component is automatically calculated.',
+  },
+  estimatedTimeFormatError: {
+  id: 'course-authoring.course-outline.configure-modal.estimated-time.format.error',
+  defaultMessage: 'Enter time in HH:MM:SS format.',
+},
+displayEstimatedTimeCheckbox: {
+  id: 'course-authoring.course-outline.configure-modal.estimated-time.display.checkbox',
+  defaultMessage: 'Display Estimated Time',
+},
+displayEstimatedTimeDescription: {
+  id: 'course-authoring.course-outline.configure-modal.estimated-time.display.description',
+  defaultMessage: 'Show estimated time to learners for this component/unit.',
+},
+courseDisplayEstimatedTimeDescription: {
+  id: 'course-authoring.course-outline.configure-modal.estimated-time.display.course-locked.description',
+  defaultMessage: 'Course-level estimated time display is enabled, so this setting is locked on for this item.',
+},
+overrideEstimatedTimeCheckbox: {
+  id: 'course-authoring.course-outline.configure-modal.estimated-time.override.checkbox',
+  defaultMessage: 'Override Estimated Time',
+},
+overrideEstimatedTimeDescription: {
+  id: 'course-authoring.course-outline.configure-modal.estimated-time.override.description',
+  defaultMessage: 'Use this unit-level value instead of per-component estimated times.',
+},
 });
 
 export default messages;
