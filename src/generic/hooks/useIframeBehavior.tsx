@@ -1,12 +1,16 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { logError } from '@edx/frontend-platform/logging';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { useKeyedState } from '@edx/react-unit-test-utils';
 
 import { useLoadBearingHook } from './useLoadBearingHook';
 import { iframeStateKeys, iframeMessageTypes } from '../../constants';
 import { UseIFrameBehaviorReturnTypes, UseIFrameBehaviorTypes } from '../types';
 import { useEventListener } from './useEventListener';
+
+// Manages unit iframe behavior, including auto-resizing, video fullscreen toggling, and XBlock notifications.
+// It also tracks loading states, handles errors, and uses useLoadBearingHook to prevent accidental removal from the unit page
+function useKeyedState<T>(_key: string, initialValue: T) {
+  return useState(initialValue);
+}
 
 /**
  * Custom hook to manage iframe behavior.
