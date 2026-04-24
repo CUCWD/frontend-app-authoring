@@ -10,6 +10,13 @@ import messages from './messages';
 
 import PrereqSettings from './PrereqSettings';
 
+/**
+ * 
+ * Updated AdvancedTab to include estimated time settings. The estimated time settings 
+ * include an input for the estimated time in "HH:MM:SS" format, a checkbox to 
+ * display the estimated time to students, and a checkbox to override the estimated 
+ * time with a custom value. 
+ */
 const AdvancedTab = ({
   values,
   setFieldValue,
@@ -29,6 +36,9 @@ const AdvancedTab = ({
     isPracticeExam,
     defaultTimeLimitMinutes,
     examReviewRules,
+    estimatedTime,
+    displayEstimatedTime,
+    overrideEstimatedTime,
   } = values;
   let examTypeValue = 'none';
 
@@ -232,6 +242,43 @@ const AdvancedTab = ({
         setFieldValue={setFieldValue}
         prereqs={prereqs}
       />
+      {/* Estimated Time Settings */}
+      <hr />
+      <h5 className="text-gray-700 mt-4 mb-3">
+        <FormattedMessage {...messages.estimatedTimeTitle} />
+      </h5>
+      <Form.Group>
+        <Form.Label>
+          <FormattedMessage {...messages.estimatedTimeDescription} />
+        </Form.Label>
+        <Form.Control
+          value={estimatedTime || '00:00:00'}
+          onChange={(e) => setFieldValue('estimatedTime', e.target.value)}
+          placeholder="HH:MM:SS"
+          pattern="^[0-9][0-9]:[0-5][0-9]:[0-5][0-9]$"
+        />
+        <Form.Text>
+          <FormattedMessage {...messages.estimatedTimeHelp} />
+        </Form.Text>
+      </Form.Group>
+      <Form.Checkbox
+        checked={!!displayEstimatedTime}
+        onChange={(e) => setFieldValue('displayEstimatedTime', e.target.checked)}
+      >
+        <FormattedMessage {...messages.displayEstimatedTimeCheckbox} />
+      </Form.Checkbox>
+      <p className="x-small font-weight-bold mb-3">
+        <FormattedMessage {...messages.displayEstimatedTimeDescription} />
+      </p>
+      <Form.Checkbox
+        checked={!!overrideEstimatedTime}
+        onChange={(e) => setFieldValue('overrideEstimatedTime', e.target.checked)}
+      >
+        <FormattedMessage {...messages.overrideEstimatedTimeCheckbox} />
+      </Form.Checkbox>
+      <p className="x-small font-weight-bold mb-0">
+        <FormattedMessage {...messages.overrideEstimatedTimeDescription} />
+      </p>
     </>
   );
 };
@@ -258,6 +305,10 @@ AdvancedTab.propTypes = {
     isPracticeExam: PropTypes.bool,
     isOnboardingExam: PropTypes.bool,
     examReviewRules: PropTypes.string,
+    // Added the estimated time variables into the prop types
+    estimatedTime: PropTypes.string,
+    displayEstimatedTime: PropTypes.bool,
+    overrideEstimatedTime: PropTypes.bool,
   }).isRequired,
   setFieldValue: PropTypes.func.isRequired,
   prereqs: PropTypes.arrayOf(PropTypes.shape({
