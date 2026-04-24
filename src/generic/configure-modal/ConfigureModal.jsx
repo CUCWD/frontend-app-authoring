@@ -60,7 +60,12 @@ const ConfigureModal = ({
     showReviewRules,
     onlineProctoringRules,
     discussionEnabled,
-  } = currentItemData;
+    estimatedTime,
+    showEstimatedTime,
+    courseShowEstimatedTime,
+    overrideEstimatedTime,
+    defaultComponentEstimatedTime,
+  } = currentItemData || {};
 
   const getSelectedGroups = () => {
     if (userPartitionInfo?.selectedPartitionIndex >= 0) {
@@ -101,6 +106,11 @@ const ConfigureModal = ({
     selectedPartitionIndex: userPartitionInfo?.selectedPartitionIndex,
     selectedGroups: getSelectedGroups(),
     discussionEnabled,
+    // Set the initial value of estimated time to the course unit's current estimated time if it exists,
+    //  otherwise use the default component estimated time or '00:00:00' if neither is available. 
+    estimatedTime: (estimatedTime && estimatedTime !== '00:00:00') ? estimatedTime  : (defaultComponentEstimatedTime || '00:00:00'),
+    displayEstimatedTime: courseShowEstimatedTime ? true : (showEstimatedTime ?? false),
+    overrideEstimatedTime: overrideEstimatedTime ?? false,
   };
 
   const validationSchema = Yup.object().shape({
@@ -166,6 +176,10 @@ const ConfigureModal = ({
           data.prereqUsageKey,
           data.prereqMinScore,
           data.prereqMinCompletion,
+          // Pass the estimated time parameters to the onConfigureSubmit function for sequential blocks.
+          data.estimatedTime,
+          data.displayEstimatedTime,
+          data.overrideEstimatedTime,
         );
         break;
       case COURSE_BLOCK_NAMES.vertical.id:
@@ -177,7 +191,15 @@ const ConfigureModal = ({
           const partitionId = userPartitionInfo.selectablePartitions[data.selectedPartitionIndex].id;
           groupAccess[partitionId] = data.selectedGroups.map(g => parseInt(g, 10));
         }
-        onConfigureSubmit(data.isVisibleToStaffOnly, groupAccess, data.discussionEnabled);
+        // Pass the estimated time parameters to the onConfigureSubmit function for vertical and component blocks.
+        onConfigureSubmit(
+          data.isVisibleToStaffOnly,
+          groupAccess,
+          data.discussionEnabled,
+          data.estimatedTime,
+          data.displayEstimatedTime,
+          data.overrideEstimatedTime,
+        );
         break;
       default:
         break;
@@ -259,6 +281,8 @@ const ConfigureModal = ({
             setFieldValue={setFieldValue}
             showWarning={visibilityState === VisibilityTypes.STAFF_ONLY && !ancestorHasStaffLock}
             userPartitionInfo={userPartitionInfo}
+            // Pass the courseShowEstimatedTime value to the UnitTab to determine whether to show the estimated time settings in the configure modal for unit and component blocks.
+            courseShowEstimatedTime={courseShowEstimatedTime ?? false}
           />
         );
       default:
@@ -371,6 +395,12 @@ ConfigureModal.propTypes = {
     showReviewRules: PropTypes.bool,
     onlineProctoringRules: PropTypes.string,
     discussionEnabled: PropTypes.bool,
+    // Added the estimated time variables into the prop types
+    estimatedTime: PropTypes.string,
+    showEstimatedTime: PropTypes.bool,
+    courseShowEstimatedTime: PropTypes.bool,
+    overrideEstimatedTime: PropTypes.bool,
+    defaultComponentEstimatedTime: PropTypes.string,
   }).isRequired,
   isXBlockComponent: PropTypes.bool,
   isSelfPaced: PropTypes.bool.isRequired,
