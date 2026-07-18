@@ -19,6 +19,7 @@ import ArchivedTab from './archived-tab';
 import CoursesTab from './courses-tab';
 import { RequestStatus } from '../../data/constants';
 import { fetchLibraryData } from '../data/thunks';
+import { useBulkRerunAccess } from '../data/bulkRerunAccess';
 
 const TabsSection = ({
   showNewCourseContainer,
@@ -61,6 +62,7 @@ const TabsSection = ({
   };
 
   const [tabKey, setTabKey] = useState(initTabKeyState(pathname));
+  const hasBulkRerunAccess = useBulkRerunAccess();
 
   // This is needed to handle navigating using the back/forward buttons in the browser
   useEffect(() => {
@@ -172,16 +174,18 @@ const TabsSection = ({
       );
     }
 
-    tabs.push(
-      <Tab
-        key={TABS_LIST.bulkReruns}
-        eventKey={TABS_LIST.bulkReruns}
-        title="Bulk Reruns"
-      />,
-    );
+    if (hasBulkRerunAccess) {
+      tabs.push(
+        <Tab
+          key={TABS_LIST.bulkReruns}
+          eventKey={TABS_LIST.bulkReruns}
+          title="Bulk Reruns"
+        />,
+      );
+    }
 
     return tabs;
-  }, [archivedCourses, showNewCourseContainer, isLoadingCourses, isLoadingLibraries]);
+  }, [archivedCourses, showNewCourseContainer, isLoadingCourses, isLoadingLibraries, hasBulkRerunAccess]);
 
   const handleSelectTab = (tab) => {
     if (tab === TABS_LIST.courses) {
