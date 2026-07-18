@@ -145,10 +145,10 @@ const ScanResults: FC<Props> = ({ data }) => {
               {subsection.units.map((unit) => {
                 if (
                   (!filters.brokenLinks && !filters.externalForbiddenLinks && !filters.lockedLinks)
-                  || (filters.brokenLinks && unit.blocks.some(block => block.brokenLinks?.length > 0))
+                  || (filters.brokenLinks && unit.blocks.some(block => block.brokenLinks.length > 0))
                   || (filters.externalForbiddenLinks
-                      && unit.blocks.some(block => block.externalForbiddenLinks?.length > 0))
-                  || (filters.lockedLinks && unit.blocks.some(block => block.lockedLinks?.length > 0))
+                      && unit.blocks.some(block => block.externalForbiddenLinks.length > 0))
+                  || (filters.lockedLinks && unit.blocks.some(block => block.lockedLinks.length > 0))
                 ) {
                   return (
                     <div className="unit">

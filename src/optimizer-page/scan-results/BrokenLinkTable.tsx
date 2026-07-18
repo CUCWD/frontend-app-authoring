@@ -99,7 +99,7 @@ const BrokenLinkTable: FC<BrokenLinkTableProps> = ({
         filters.brokenLinks
             || (!filters.brokenLinks && !filters.externalForbiddenLinks && !filters.lockedLinks)
       ) {
-        const blockBrokenLinks = (block.brokenLinks || []).map((link) => ({
+        const blockBrokenLinks = block.brokenLinks.map((link) => ({
           Links: (
             <LinksCol
               block={{ url: block.url, displayName: block.displayName || 'Go to block' }}
@@ -115,7 +115,7 @@ const BrokenLinkTable: FC<BrokenLinkTableProps> = ({
         filters.lockedLinks
             || (!filters.brokenLinks && !filters.externalForbiddenLinks && !filters.lockedLinks)
       ) {
-        const blockLockedLinks = (block.lockedLinks || []).map((link) => ({
+        const blockLockedLinks = block.lockedLinks.map((link) => ({
           Links: (
             <LinksCol
               block={{ url: block.url, displayName: block.displayName || 'Go to block' }}
@@ -132,7 +132,7 @@ const BrokenLinkTable: FC<BrokenLinkTableProps> = ({
         filters.externalForbiddenLinks
             || (!filters.brokenLinks && !filters.externalForbiddenLinks && !filters.lockedLinks)
       ) {
-        const externalForbiddenLinks = (block.externalForbiddenLinks || []).map((link) => ({
+        const externalForbiddenLinks = block.externalForbiddenLinks.map((link) => ({
           Links: (
             <LinksCol
               block={{ url: block.url, displayName: block.displayName || 'Go to block' }}

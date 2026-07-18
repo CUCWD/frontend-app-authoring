@@ -129,44 +129,48 @@ describe('CourseOptimizerPage', () => {
 
     it('should list broken links results', async () => {
       const {
-        getByText, getAllByText, container,
+        getByText, queryAllByText, getAllByText, container,
       } = render(<OptimizerPage />);
       expect(getByText(messages.headingTitle.defaultMessage)).toBeInTheDocument();
       fireEvent.click(getByText(messages.buttonTitle.defaultMessage));
       await waitFor(() => {
-        expect(getByText(scanResultsMessages.scanHeader.defaultMessage)).toBeInTheDocument();
+        expect(getByText('5 broken links')).toBeInTheDocument();
+        expect(getByText('5 locked links')).toBeInTheDocument();
       });
       const collapsibleTrigger = container.querySelector('.collapsible-trigger');
       expect(collapsibleTrigger).toBeInTheDocument();
       fireEvent.click(collapsibleTrigger);
       await waitFor(() => {
+        expect(getAllByText(scanResultsMessages.brokenLinkStatus.defaultMessage)[0]).toBeInTheDocument();
+        expect(queryAllByText(scanResultsMessages.lockedLinkStatus.defaultMessage)[0]).toBeInTheDocument();
+        expect(queryAllByText(scanResultsMessages.recommendedManualCheckText.defaultMessage)[0]).toBeInTheDocument();
         const brokenLinks = getAllByText('https://example.com/broken-link-algo');
         expect(brokenLinks.length).toBeGreaterThan(0);
         fireEvent.click(brokenLinks[0]);
         const lockedLinks = getAllByText('https://example.com/locked-link-algo');
         expect(lockedLinks.length).toBeGreaterThan(0);
         fireEvent.click(lockedLinks[0]);
-        fireEvent.click((getAllByText('Go to block'))[0]);
+        fireEvent.click((getAllByText('Go to Block'))[0]);
       });
     });
 
-    it('should not list locked links results when filtering to broken links', async () => {
+    it('should not list locked links results when show locked links is unchecked', async () => {
       const {
-        getByText, getAllByText, getByLabelText, queryAllByText, container,
+        getByText, getAllByText, getByLabelText, queryAllByText, queryByText, container,
       } = render(<OptimizerPage />);
       expect(getByText(messages.headingTitle.defaultMessage)).toBeInTheDocument();
       fireEvent.click(getByText(messages.buttonTitle.defaultMessage));
       await waitFor(() => {
-        expect(getByText(scanResultsMessages.scanHeader.defaultMessage)).toBeInTheDocument();
+        expect(getByText('5 broken links')).toBeInTheDocument();
       });
-      fireEvent.click(getByText(scanResultsMessages.filterButtonLabel.defaultMessage));
-      fireEvent.click(getByLabelText(scanResultsMessages.brokenLabel.defaultMessage));
+      fireEvent.click(getByLabelText(scanResultsMessages.lockedCheckboxLabel.defaultMessage));
       const collapsibleTrigger = container.querySelector('.collapsible-trigger');
       expect(collapsibleTrigger).toBeInTheDocument();
       fireEvent.click(collapsibleTrigger);
       await waitFor(() => {
-        expect(getAllByText('https://example.com/broken-link-algo')[0]).toBeInTheDocument();
-        expect(queryAllByText('https://example.com/locked-link-algo')).toHaveLength(0);
+        expect(queryByText('5 locked links')).not.toBeInTheDocument();
+        expect(getAllByText(scanResultsMessages.brokenLinkStatus.defaultMessage)[0]).toBeInTheDocument();
+        expect(queryAllByText(scanResultsMessages.lockedLinkStatus.defaultMessage)?.[0]).toBeUndefined();
       });
     });
 
