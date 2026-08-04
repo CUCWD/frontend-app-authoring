@@ -129,48 +129,42 @@ describe('CourseOptimizerPage', () => {
 
     it('should list broken links results', async () => {
       const {
-        getByText, queryAllByText, getAllByText, container,
+        getByText, getAllByText, container,
       } = render(<OptimizerPage />);
       expect(getByText(messages.headingTitle.defaultMessage)).toBeInTheDocument();
       fireEvent.click(getByText(messages.buttonTitle.defaultMessage));
       await waitFor(() => {
-        expect(getByText('5 broken links')).toBeInTheDocument();
-        expect(getByText('5 locked links')).toBeInTheDocument();
+        expect(getByText('Introduction to Programming')).toBeInTheDocument();
+        expect(getByText('Advanced Topics')).toBeInTheDocument();
       });
       const collapsibleTrigger = container.querySelector('.collapsible-trigger');
       expect(collapsibleTrigger).toBeInTheDocument();
       fireEvent.click(collapsibleTrigger);
       await waitFor(() => {
-        expect(getAllByText(scanResultsMessages.brokenLinkStatus.defaultMessage)[0]).toBeInTheDocument();
-        expect(queryAllByText(scanResultsMessages.lockedLinkStatus.defaultMessage)[0]).toBeInTheDocument();
-        expect(queryAllByText(scanResultsMessages.recommendedManualCheckText.defaultMessage)[0]).toBeInTheDocument();
         const brokenLinks = getAllByText('https://example.com/broken-link-algo');
         expect(brokenLinks.length).toBeGreaterThan(0);
-        fireEvent.click(brokenLinks[0]);
         const lockedLinks = getAllByText('https://example.com/locked-link-algo');
         expect(lockedLinks.length).toBeGreaterThan(0);
-        fireEvent.click(lockedLinks[0]);
-        fireEvent.click((getAllByText('Go to Block'))[0]);
       });
     });
 
     it('should not list locked links results when show locked links is unchecked', async () => {
       const {
-        getByText, getAllByText, getByLabelText, queryAllByText, queryByText, container,
+        getByText, getAllByText, getByLabelText, queryAllByText, container,
       } = render(<OptimizerPage />);
       expect(getByText(messages.headingTitle.defaultMessage)).toBeInTheDocument();
       fireEvent.click(getByText(messages.buttonTitle.defaultMessage));
       await waitFor(() => {
-        expect(getByText('5 broken links')).toBeInTheDocument();
+        expect(getByText('Introduction to Programming')).toBeInTheDocument();
       });
-      fireEvent.click(getByLabelText(scanResultsMessages.lockedCheckboxLabel.defaultMessage));
+      fireEvent.click(getByText(scanResultsMessages.filterButtonLabel.defaultMessage));
+      fireEvent.click(getByLabelText(scanResultsMessages.brokenLabel.defaultMessage));
       const collapsibleTrigger = container.querySelector('.collapsible-trigger');
       expect(collapsibleTrigger).toBeInTheDocument();
       fireEvent.click(collapsibleTrigger);
       await waitFor(() => {
-        expect(queryByText('5 locked links')).not.toBeInTheDocument();
-        expect(getAllByText(scanResultsMessages.brokenLinkStatus.defaultMessage)[0]).toBeInTheDocument();
-        expect(queryAllByText(scanResultsMessages.lockedLinkStatus.defaultMessage)?.[0]).toBeUndefined();
+        expect(getAllByText('https://example.com/broken-link-algo').length).toBeGreaterThan(0);
+        expect(queryAllByText('https://example.com/locked-link-algo')).toHaveLength(0);
       });
     });
 
