@@ -16,7 +16,7 @@ import ToleranceCard from './settingsComponents/Tolerance';
 import GroupFeedbackCard from './settingsComponents/GroupFeedback/index';
 import SwitchEditorCard from './settingsComponents/SwitchEditorCard';
 import messages from './messages';
-import { showAdvancedSettingsCards } from './hooks';
+import { showAdvancedSettingsCards, useUpstreamSyncForCustomizableFields } from './hooks';
 
 import './index.scss';
 import { ProblemTypeKeys } from '../../../../../data/constants/problem';
@@ -40,8 +40,15 @@ const SettingsWidget = ({
   isLibrary,
   learningContextId,
   showMarkdownEditorButton,
+  studioEndpointUrl,
 }) => {
   const { isAdvancedCardsVisible, showAdvancedCards } = showAdvancedSettingsCards();
+  // This mirrors FEATURES['ENABLE_UPSTREAM_SYNC_FOR_CUSTOMIZABLE_FIELDS'] from
+  // the CMS and controls whether library problem settings can be customized.
+  const enableUpstreamSyncForCustomizableFields = useUpstreamSyncForCustomizableFields(
+    isLibrary,
+    studioEndpointUrl,
+  );
   const feedbackCard = () => {
     if ([ProblemTypeKeys.MULTISELECT].includes(problemType)) {
       return (
@@ -80,7 +87,7 @@ const SettingsWidget = ({
             />
           </div>
           )}
-      {!isLibrary && (
+      {(!isLibrary || enableUpstreamSyncForCustomizableFields) && (
         <div className="my-3">
           <ScoringCard
             scoring={settings.scoring}
@@ -118,7 +125,7 @@ const SettingsWidget = ({
       </div>
       <Collapsible.Advanced open={isAdvancedCardsVisible}>
         <Collapsible.Body className="collapsible-body">
-          {!isLibrary && (
+          {(!isLibrary || enableUpstreamSyncForCustomizableFields) && (
             <div className="my-3">
               <ShowAnswerCard
                 showAnswer={settings.showAnswer}
@@ -127,7 +134,7 @@ const SettingsWidget = ({
               />
             </div>
           )}
-          {!isLibrary && (
+          {(!isLibrary || enableUpstreamSyncForCustomizableFields) && (
             <div className="my-3">
               <ResetCard
                 showResetButton={settings.showResetButton}
@@ -147,7 +154,7 @@ const SettingsWidget = ({
             </div>
             )
           }
-          {!isLibrary && (
+          {(!isLibrary || enableUpstreamSyncForCustomizableFields) && (
             <div className="my-3">
               <TimerCard timeBetween={settings.timeBetween} updateSettings={updateSettings} />
             </div>
@@ -203,6 +210,7 @@ SettingsWidget.propTypes = {
   // eslint-disable-next-line
   settings: PropTypes.any.isRequired,
   showMarkdownEditorButton: PropTypes.bool.isRequired,
+  studioEndpointUrl: PropTypes.string.isRequired,
 };
 
 const mapStateToProps = (state) => ({
@@ -217,6 +225,7 @@ const mapStateToProps = (state) => ({
   learningContextId: selectors.app.learningContextId(state),
   showMarkdownEditorButton: selectors.app.isMarkdownEditorEnabledForCourse(state)
   && selectors.problem.rawMarkdown(state),
+  studioEndpointUrl: selectors.app.studioEndpointUrl(state),
 });
 
 export const mapDispatchToProps = {
