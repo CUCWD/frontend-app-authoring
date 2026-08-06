@@ -116,6 +116,11 @@ export const videoFeatures = (({ studioEndpointUrl }) => (
   `${studioEndpointUrl}/video_features/`
 )) satisfies UrlFunction;
 
+// CMS endpoint exposing FEATURES['ENABLE_UPSTREAM_SYNC_FOR_CUSTOMIZABLE_FIELDS'].
+export const authoringConfig = (({ studioEndpointUrl }) => (
+  `${studioEndpointUrl}/api/contentstore/v2/config/`
+)) satisfies UrlFunction;
+
 export const courseVideos = (({ studioEndpointUrl, learningContextId }) => (
   `${studioEndpointUrl}/videos/${learningContextId}`
 )) satisfies UrlFunction;

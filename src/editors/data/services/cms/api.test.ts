@@ -18,6 +18,7 @@ jest.mock('./urls', () => ({
   courseAdvanceSettings: jest.fn().mockReturnValue('urls.courseAdvanceSettings'),
   replaceTranscript: jest.fn().mockReturnValue('urls.replaceTranscript'),
   videoFeatures: jest.fn().mockReturnValue('urls.videoFeatures'),
+  authoringConfig: jest.fn().mockReturnValue('urls.authoringConfig'),
   courseVideos: jest.fn()
     .mockName('urls.courseVideos')
     .mockImplementation(
@@ -47,6 +48,13 @@ describe('cms api', () => {
     learningContextId = 'demo2uX';
   });
   describe('apiMethods', () => {
+    describe('fetchAuthoringConfig', () => {
+      it('should call get with the authoring config URL', () => {
+        apiMethods.fetchAuthoringConfig({ studioEndpointUrl });
+        expect(get).toHaveBeenCalledWith(urls.authoringConfig({ studioEndpointUrl }));
+      });
+    });
+
     describe('fetchBlockId', () => {
       it('should call get with url.blocks', () => {
         apiMethods.fetchBlockById({ blockId, studioEndpointUrl });

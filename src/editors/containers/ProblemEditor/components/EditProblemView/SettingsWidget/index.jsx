@@ -16,7 +16,7 @@ import ToleranceCard from './settingsComponents/Tolerance';
 import GroupFeedbackCard from './settingsComponents/GroupFeedback/index';
 import SwitchEditorCard from './settingsComponents/SwitchEditorCard';
 import messages from './messages';
-import { showAdvancedSettingsCards } from './hooks';
+import { showAdvancedSettingsCards, useUpstreamSyncForCustomizableFields } from './hooks';
 
 import './index.scss';
 import { ProblemTypeKeys } from '../../../../../data/constants/problem';
@@ -40,8 +40,15 @@ const SettingsWidget = ({
   isLibrary,
   learningContextId,
   showMarkdownEditorButton,
+  studioEndpointUrl,
 }) => {
   const { isAdvancedCardsVisible, showAdvancedCards } = showAdvancedSettingsCards();
+  // This mirrors FEATURES['ENABLE_UPSTREAM_SYNC_FOR_CUSTOMIZABLE_FIELDS'] from
+  // the CMS and controls whether library problem settings can be customized.
+  const enableUpstreamSyncForCustomizableFields = useUpstreamSyncForCustomizableFields(
+    isLibrary,
+    studioEndpointUrl,
+  );
   const feedbackCard = () => {
     if ([ProblemTypeKeys.MULTISELECT].includes(problemType)) {
       return (
@@ -80,13 +87,15 @@ const SettingsWidget = ({
             />
           </div>
           )}
-      <div className="my-3">
-        <ScoringCard
-          scoring={settings.scoring}
-          defaultValue={defaultSettings.maxAttempts}
-          updateSettings={updateSettings}
-        />
-      </div>
+      {(!isLibrary || enableUpstreamSyncForCustomizableFields) && (
+        <div className="my-3">
+          <ScoringCard
+            scoring={settings.scoring}
+            defaultValue={defaultSettings.maxAttempts}
+            updateSettings={updateSettings}
+          />
+        </div>
+      )}
       <div className="mt-3">
         <HintsCard
           problemType={problemType}
@@ -114,23 +123,26 @@ const SettingsWidget = ({
           </Collapsible.Body>
         </Collapsible.Advanced>
       </div>
-
       <Collapsible.Advanced open={isAdvancedCardsVisible}>
         <Collapsible.Body className="collapsible-body">
-          <div className="my-3">
-            <ShowAnswerCard
-              showAnswer={settings.showAnswer}
-              defaultValue={defaultSettings.showanswer}
-              updateSettings={updateSettings}
-            />
-          </div>
-          <div className="my-3">
-            <ResetCard
-              showResetButton={settings.showResetButton}
-              defaultValue={defaultSettings.showResetButton}
-              updateSettings={updateSettings}
-            />
-          </div>
+          {(!isLibrary || enableUpstreamSyncForCustomizableFields) && (
+            <div className="my-3">
+              <ShowAnswerCard
+                showAnswer={settings.showAnswer}
+                defaultValue={defaultSettings.showanswer}
+                updateSettings={updateSettings}
+              />
+            </div>
+          )}
+          {(!isLibrary || enableUpstreamSyncForCustomizableFields) && (
+            <div className="my-3">
+              <ResetCard
+                showResetButton={settings.showResetButton}
+                defaultValue={defaultSettings.showResetButton}
+                updateSettings={updateSettings}
+              />
+            </div>
+          )}
           {
             problemType === ProblemTypeKeys.ADVANCED && (
             <div className="my-3">
@@ -142,9 +154,11 @@ const SettingsWidget = ({
             </div>
             )
           }
-          <div className="my-3">
-            <TimerCard timeBetween={settings.timeBetween} updateSettings={updateSettings} />
-          </div>
+          {(!isLibrary || enableUpstreamSyncForCustomizableFields) && (
+            <div className="my-3">
+              <TimerCard timeBetween={settings.timeBetween} updateSettings={updateSettings} />
+            </div>
+          )}
           <div className="my-3">
             <SwitchEditorCard problemType={problemType} editorType="advanced" />
           </div>
@@ -196,6 +210,7 @@ SettingsWidget.propTypes = {
   // eslint-disable-next-line
   settings: PropTypes.any.isRequired,
   showMarkdownEditorButton: PropTypes.bool.isRequired,
+  studioEndpointUrl: PropTypes.string.isRequired,
 };
 
 const mapStateToProps = (state) => ({
@@ -210,6 +225,7 @@ const mapStateToProps = (state) => ({
   learningContextId: selectors.app.learningContextId(state),
   showMarkdownEditorButton: selectors.app.isMarkdownEditorEnabledForCourse(state)
   && selectors.problem.rawMarkdown(state),
+  studioEndpointUrl: selectors.app.studioEndpointUrl(state),
 });
 
 export const mapDispatchToProps = {

@@ -16,6 +16,7 @@ import {
   ShowAnswerTypesKeys,
 } from '../../../../../data/constants/problem';
 import { fetchEditorContent } from '../hooks';
+import { apiMethods } from '../../../../../data/services/cms/api';
 
 export const state = {
   // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -36,6 +37,42 @@ export const showAdvancedSettingsCards = () => {
     isAdvancedCardsVisible,
     showAdvancedCards: () => setIsAdvancedCardsVisible(true),
   };
+};
+
+/**
+ * Check whether Library problem settings may be customized through upstream sync.
+ *
+ * Course editors do not need this check because their settings cards are always
+ * available.  For library editors, the CMS endpoint exposes the value of
+ * ``FEATURES['ENABLE_UPSTREAM_SYNC_FOR_CUSTOMIZABLE_FIELDS']`` as the source
+ * of truth, and the cards remain hidden unless that feature is enabled.
+ */
+export const useUpstreamSyncForCustomizableFields = (isLibrary, studioEndpointUrl) => {
+  const [enabled, setEnabled] = useState(false);
+
+  useEffect(() => {
+    if (!isLibrary) {
+      return undefined;
+    }
+
+    let isMounted = true;
+    apiMethods.fetchAuthoringConfig({ studioEndpointUrl })
+      .then(({ data }) => {
+        if (isMounted) {
+          setEnabled(data.enable_upstream_sync_for_customizable_fields === true);
+        }
+      })
+      .catch(() => {
+        // If the optional endpoint is unavailable, keep the library scoring
+        // card hidden until the CMS explicitly enables the feature.
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [isLibrary, studioEndpointUrl]);
+
+  return enabled;
 };
 
 export const showFullCard = (hasExpandableTextArea) => {

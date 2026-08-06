@@ -1,13 +1,14 @@
 import 'CourseAuthoring/editors/setupEditorTest';
 import React from 'react';
 import { shallow } from '@edx/react-unit-test-utils';
-import { showAdvancedSettingsCards } from './hooks';
+import { showAdvancedSettingsCards, useUpstreamSyncForCustomizableFields } from './hooks';
 import { SettingsWidgetInternal as SettingsWidget, mapDispatchToProps } from '.';
 import { ProblemTypeKeys } from '../../../../../data/constants/problem';
 import { actions } from '../../../../../data/redux';
 
 jest.mock('./hooks', () => ({
   showAdvancedSettingsCards: jest.fn(),
+  useUpstreamSyncForCustomizableFields: jest.fn().mockReturnValue(false),
 }));
 
 jest.mock('./settingsComponents/GeneralFeedback', () => 'GeneralFeedback');
@@ -33,6 +34,7 @@ describe('SettingsWidget', () => {
     images: {},
     isLibrary: false,
     learningContextId: 'course+org+run',
+    studioEndpointUrl: 'http://studio.example.test',
   };
 
   describe('behavior', () => {
@@ -44,6 +46,60 @@ describe('SettingsWidget', () => {
       showAdvancedSettingsCards.mockReturnValue(showAdvancedSettingsCardsProps);
       shallow(<SettingsWidget {...props} />);
       expect(showAdvancedSettingsCards).toHaveBeenCalledWith();
+    });
+
+    it('shows ScoringCard for a library when upstream sync is enabled', () => {
+      useUpstreamSyncForCustomizableFields.mockReturnValue(true);
+      const showAdvancedSettingsCardsProps = {
+        isAdvancedCardsVisible: false,
+        setResetTrue: jest.fn(),
+      };
+      showAdvancedSettingsCards.mockReturnValue(showAdvancedSettingsCardsProps);
+
+      const wrapper = shallow(<SettingsWidget {...props} isLibrary />);
+
+      expect(wrapper.instance.findByType('ScoringCard')).toHaveLength(1);
+    });
+
+    it('hides ScoringCard for a library when upstream sync is disabled', () => {
+      useUpstreamSyncForCustomizableFields.mockReturnValue(false);
+      const showAdvancedSettingsCardsProps = {
+        isAdvancedCardsVisible: false,
+        setResetTrue: jest.fn(),
+      };
+      showAdvancedSettingsCards.mockReturnValue(showAdvancedSettingsCardsProps);
+
+      const wrapper = shallow(<SettingsWidget {...props} isLibrary />);
+
+      expect(wrapper.instance.findByType('ScoringCard')).toHaveLength(0);
+    });
+
+    it('shows customizable setting cards for a library when upstream sync is enabled', () => {
+      useUpstreamSyncForCustomizableFields.mockReturnValue(true);
+      showAdvancedSettingsCards.mockReturnValue({
+        isAdvancedCardsVisible: true,
+        setResetTrue: jest.fn(),
+      });
+
+      const wrapper = shallow(<SettingsWidget {...props} isLibrary />);
+
+      expect(wrapper.instance.findByType('ShowAnswerCard')).toHaveLength(1);
+      expect(wrapper.instance.findByType('ResetCard')).toHaveLength(1);
+      expect(wrapper.instance.findByType('TimerCard')).toHaveLength(1);
+    });
+
+    it('hides customizable setting cards for a library when upstream sync is disabled', () => {
+      useUpstreamSyncForCustomizableFields.mockReturnValue(false);
+      showAdvancedSettingsCards.mockReturnValue({
+        isAdvancedCardsVisible: true,
+        setResetTrue: jest.fn(),
+      });
+
+      const wrapper = shallow(<SettingsWidget {...props} isLibrary />);
+
+      expect(wrapper.instance.findByType('ShowAnswerCard')).toHaveLength(0);
+      expect(wrapper.instance.findByType('ResetCard')).toHaveLength(0);
+      expect(wrapper.instance.findByType('TimerCard')).toHaveLength(0);
     });
   });
 
@@ -71,6 +127,39 @@ describe('SettingsWidget', () => {
       };
       showAdvancedSettingsCards.mockReturnValue(showAdvancedSettingsCardsProps);
       expect(shallow(<SettingsWidget problemType={ProblemTypeKeys.ADVANCED} {...props} />).snapshot).toMatchSnapshot();
+    });
+  });
+
+  describe('isLibrary', () => {
+    const libraryProps = {
+      ...props,
+      isLibrary: true,
+    };
+    test('snapshot: renders Settings widget page', () => {
+      const showAdvancedSettingsCardsProps = {
+        isAdvancedCardsVisible: false,
+        setResetTrue: jest.fn().mockName('showAdvancedSettingsCards.setResetTrue'),
+      };
+      showAdvancedSettingsCards.mockReturnValue(showAdvancedSettingsCardsProps);
+      expect(shallow(<SettingsWidget {...libraryProps} />).snapshot).toMatchSnapshot();
+    });
+    test('snapshot: renders Settings widget page advanced settings visible', () => {
+      const showAdvancedSettingsCardsProps = {
+        isAdvancedCardsVisible: true,
+        setResetTrue: jest.fn().mockName('showAdvancedSettingsCards.setResetTrue'),
+      };
+      showAdvancedSettingsCards.mockReturnValue(showAdvancedSettingsCardsProps);
+      expect(shallow(<SettingsWidget {...libraryProps} />).snapshot).toMatchSnapshot();
+    });
+    test('snapshot: renders Settings widget for Advanced Problem with correct widgets', () => {
+      const showAdvancedSettingsCardsProps = {
+        isAdvancedCardsVisible: true,
+        setResetTrue: jest.fn().mockName('showAdvancedSettingsCards.setResetTrue'),
+      };
+      showAdvancedSettingsCards.mockReturnValue(showAdvancedSettingsCardsProps);
+      expect(shallow(
+        <SettingsWidget problemType={ProblemTypeKeys.ADVANCED} {...libraryProps} />,
+      ).snapshot).toMatchSnapshot();
     });
   });
 
