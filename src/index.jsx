@@ -27,6 +27,7 @@ import initializeStore from './store';
 import CourseAuthoringRoutes from './CourseAuthoringRoutes';
 import Head from './head/Head';
 import { StudioHome } from './studio-home';
+import BulkRerunsLayout from './studio-home/BulkRerunsLayout';
 import CourseRerun from './course-rerun';
 import { TaxonomyLayout, TaxonomyDetailPage, TaxonomyListPage } from './taxonomy';
 import { ContentTagsDrawer } from './content-tags-drawer';
@@ -69,6 +70,7 @@ const App = () => {
         <Route path="/libraries-v1" element={<StudioHome />} />
         <Route path="/libraries-v1/migrate" element={<LegacyLibMigrationPage />} />
         <Route path="/libraries-v1/create" element={<CreateLegacyLibrary />} />
+        <Route path="/bulk-reruns" element={<BulkRerunsLayout />} />
         <Route path="/library/create" element={<CreateLibrary />} />
         <Route path="/library/:libraryId/*" element={<LibraryLayout />} />
         <Route
