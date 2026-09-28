@@ -25,11 +25,17 @@ import {
 } from '../factories/mockApiResponses';
 import { getApiBaseUrl, getStudioHomeApiUrl } from '../data/api';
 import { fetchStudioHomeData } from '../data/thunks';
+import { useBulkRerunAccess } from '../data/bulkRerunAccess';
+
+jest.mock('../data/bulkRerunAccess', () => ({
+  useBulkRerunAccess: jest.fn(),
+}));
 
 const { studioShortName } = studioHomeMock;
 
 let axiosMock;
 let store;
+const mockedUseBulkRerunAccess = useBulkRerunAccess as jest.MockedFunction<typeof useBulkRerunAccess>;
 const courseApiLinkV2 = `${getApiBaseUrl()}/api/contentstore/v2/home/courses`;
 const libraryApiLink = `${getStudioHomeApiUrl()}/libraries`;
 
@@ -76,10 +82,24 @@ const render = (overrideProps = {}) => baseRender(
 
 describe('<TabsSection />', () => {
   beforeEach(() => {
+    mockedUseBulkRerunAccess.mockReturnValue(false);
     const newMocks = initializeMocks({ initialState });
     store = newMocks.reduxStore;
     axiosMock = newMocks.axiosMock;
     mockGetContentLibraryV2List.applyMock();
+  });
+
+  it('shows the Bulk Reruns tab only to Django superusers', () => {
+    mockedUseBulkRerunAccess.mockReturnValue(true);
+    render();
+
+    expect(screen.getByRole('tab', { name: 'Bulk Reruns' })).toBeInTheDocument();
+  });
+
+  it('hides the Bulk Reruns tab from non-superusers', () => {
+    render();
+
+    expect(screen.queryByRole('tab', { name: 'Bulk Reruns' })).not.toBeInTheDocument();
   });
 
   it('should render all tabs correctly', async () => {

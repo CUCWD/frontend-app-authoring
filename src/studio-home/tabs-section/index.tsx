@@ -18,6 +18,7 @@ import { BaseFilterState, Filter, LibrariesList } from './libraries-tab';
 import LibrariesV2List from './libraries-v2-tab/index';
 import CoursesTab from './courses-tab';
 import { WelcomeLibrariesV2Alert } from './libraries-v2-tab/WelcomeLibrariesV2Alert';
+import { useBulkRerunAccess } from '../data/bulkRerunAccess';
 
 const TabsSection = ({
   showNewCourseContainer,
@@ -36,8 +37,9 @@ const TabsSection = ({
     legacyLibraries: 'legacyLibraries',
     archived: 'archived',
     taxonomies: 'taxonomies',
+    bulkReruns: 'bulk-reruns',
   } as const;
-  type TabKeyType = keyof typeof TABS_LIST;
+  type TabKeyType = (typeof TABS_LIST)[keyof typeof TABS_LIST];
 
   const initTabKeyState = (pname: string) => {
     if (pname.includes('/libraries-v1')) {
@@ -50,11 +52,16 @@ const TabsSection = ({
         : TABS_LIST.legacyLibraries;
     }
 
+    if (pname.includes('/bulk-reruns')) {
+      return TABS_LIST.bulkReruns;
+    }
+
     // Default to courses tab
     return TABS_LIST.courses;
   };
 
   const [tabKey, setTabKey] = useState<TabKeyType>(initTabKeyState(pathname));
+  const hasBulkRerunAccess = useBulkRerunAccess();
 
   // This is needed to handle navigating using the back/forward buttons in the browser
   useEffect(() => {
@@ -140,8 +147,18 @@ const TabsSection = ({
       );
     }
 
+    if (hasBulkRerunAccess) {
+      tabs.push(
+        <Tab
+          key={TABS_LIST.bulkReruns}
+          eventKey={TABS_LIST.bulkReruns}
+          title="Bulk Reruns"
+        />,
+      );
+    }
+
     return tabs;
-  }, [showNewCourseContainer, isLoadingCourses, migrationFilter, isShowProcessing]);
+  }, [showNewCourseContainer, isLoadingCourses, migrationFilter, isShowProcessing, hasBulkRerunAccess]);
 
   const handleSelectTab = (tab: TabKeyType) => {
     if (tab === TABS_LIST.courses) {
@@ -152,6 +169,8 @@ const TabsSection = ({
       navigate('/libraries');
     } else if (tab === TABS_LIST.taxonomies) {
       navigate('/taxonomies');
+    } else if (tab === TABS_LIST.bulkReruns) {
+      navigate('/bulk-reruns');
     }
     setTabKey(tab);
   };
