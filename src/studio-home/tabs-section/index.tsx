@@ -18,6 +18,7 @@ import { BaseFilterState, Filter, LibrariesList } from './libraries-tab';
 import LibrariesV2List from './libraries-v2-tab/index';
 import CoursesTab from './courses-tab';
 import { WelcomeLibrariesV2Alert } from './libraries-v2-tab/WelcomeLibrariesV2Alert';
+import { useBulkRerunAccess } from '../data/bulkRerunAccess';
 
 const TabsSection = ({
   showNewCourseContainer,
@@ -60,6 +61,7 @@ const TabsSection = ({
   };
 
   const [tabKey, setTabKey] = useState<TabKeyType>(initTabKeyState(pathname));
+  const hasBulkRerunAccess = useBulkRerunAccess();
 
   // This is needed to handle navigating using the back/forward buttons in the browser
   useEffect(() => {
@@ -145,16 +147,18 @@ const TabsSection = ({
       );
     }
 
-    tabs.push(
-      <Tab
-        key={TABS_LIST.bulkReruns}
-        eventKey={TABS_LIST.bulkReruns}
-        title="Bulk Reruns"
-      />,
-    );
+    if (hasBulkRerunAccess) {
+      tabs.push(
+        <Tab
+          key={TABS_LIST.bulkReruns}
+          eventKey={TABS_LIST.bulkReruns}
+          title="Bulk Reruns"
+        />,
+      );
+    }
 
     return tabs;
-  }, [showNewCourseContainer, isLoadingCourses, migrationFilter, isShowProcessing]);
+  }, [showNewCourseContainer, isLoadingCourses, migrationFilter, isShowProcessing, hasBulkRerunAccess]);
 
   const handleSelectTab = (tab: TabKeyType) => {
     if (tab === TABS_LIST.courses) {

@@ -1,7 +1,13 @@
 import { PluginSlot } from '@openedx/frontend-plugin-framework/dist';
 
-export const StudioHomeBulkRerunsSlot = () => (
-  <PluginSlot
-    id="org.cucwd.frontend.authoring.studio_home_bulk_reruns.v1"
-  />
-);
+import { useBulkRerunAccess } from '../../studio-home/data/bulkRerunAccess';
+
+export const StudioHomeBulkRerunsSlot = () => {
+  const hasAccess = useBulkRerunAccess();
+
+  if (!hasAccess) {
+    return null;
+  }
+
+  return <PluginSlot id="org.cucwd.frontend.authoring.studio_home_bulk_reruns.v1" />;
+};
