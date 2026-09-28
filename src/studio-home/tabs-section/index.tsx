@@ -39,7 +39,7 @@ const TabsSection = ({
     taxonomies: 'taxonomies',
     bulkReruns: 'bulk-reruns',
   } as const;
-  type TabKeyType = keyof typeof TABS_LIST;
+  type TabKeyType = (typeof TABS_LIST)[keyof typeof TABS_LIST];
 
   const initTabKeyState = (pname: string) => {
     if (pname.includes('/libraries-v1')) {
