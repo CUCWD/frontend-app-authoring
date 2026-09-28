@@ -8,6 +8,11 @@ import * as hooks from './hooks';
 import { SettingsWidgetInternal as SettingsWidget } from '.';
 import { ProblemEditorContextProvider } from '../ProblemEditorContext';
 
+jest.mock('./hooks', () => ({
+  ...jest.requireActual('./hooks'),
+  showAdvancedSettingsCards: jest.fn(),
+  useUpstreamSyncForCustomizableFields: jest.fn().mockReturnValue(false),
+}));
 jest.mock('./settingsComponents/GeneralFeedback', () => 'GeneralFeedback');
 jest.mock('./settingsComponents/GroupFeedback', () => 'GroupFeedback');
 jest.mock('./settingsComponents/Randomization', () => 'Randomization');
@@ -37,6 +42,7 @@ describe('SettingsWidget', () => {
     images: {},
     isLibrary: false,
     learningContextId: 'course+org+run',
+    studioEndpointUrl: 'http://studio.example.test',
     setBlockTitle: jest.fn().mockName('setBlockTitle'),
     blockTitle: '',
     updateAnswer: jest.fn().mockName('updateAnswer'),
@@ -63,11 +69,12 @@ describe('SettingsWidget', () => {
 
   beforeEach(() => {
     initializeMocks();
+    jest.mocked(hooks.useUpstreamSyncForCustomizableFields).mockReturnValue(false);
   });
 
   describe('behavior', () => {
     it('calls showAdvancedSettingsCards when initialized', () => {
-      jest.spyOn(hooks, 'showAdvancedSettingsCards').mockReturnValue(showAdvancedSettingsCardsBaseProps);
+      jest.mocked(hooks.showAdvancedSettingsCards).mockReturnValue(showAdvancedSettingsCardsBaseProps);
       renderSettingsWidget();
       expect(hooks.showAdvancedSettingsCards).toHaveBeenCalled();
     });
@@ -75,7 +82,7 @@ describe('SettingsWidget', () => {
 
   describe('renders', () => {
     test('renders Settings widget page', () => {
-      jest.spyOn(hooks, 'showAdvancedSettingsCards').mockReturnValue(showAdvancedSettingsCardsBaseProps);
+      jest.mocked(hooks.showAdvancedSettingsCards).mockReturnValue(showAdvancedSettingsCardsBaseProps);
       renderSettingsWidget();
       expect(screen.getByText('Show advanced settings')).toBeInTheDocument();
     });
@@ -85,7 +92,7 @@ describe('SettingsWidget', () => {
         ...showAdvancedSettingsCardsBaseProps,
         isAdvancedCardsVisible: true,
       };
-      jest.spyOn(hooks, 'showAdvancedSettingsCards').mockReturnValue(showAdvancedSettingsCardsProps);
+      jest.mocked(hooks.showAdvancedSettingsCards).mockReturnValue(showAdvancedSettingsCardsProps);
       const { container } = renderSettingsWidget();
       expect(screen.queryByText('Show advanced settings')).not.toBeInTheDocument();
       expect(container.querySelector('showanswercard')).toBeInTheDocument();
@@ -97,7 +104,7 @@ describe('SettingsWidget', () => {
         ...showAdvancedSettingsCardsBaseProps,
         isAdvancedCardsVisible: true,
       };
-      jest.spyOn(hooks, 'showAdvancedSettingsCards').mockReturnValue(showAdvancedSettingsCardsProps);
+      jest.mocked(hooks.showAdvancedSettingsCards).mockReturnValue(showAdvancedSettingsCardsProps);
       const { container } = renderSettingsWidget({ problemType: ProblemTypeKeys.ADVANCED });
       expect(container.querySelector('randomization')).toBeInTheDocument();
     });
@@ -108,7 +115,7 @@ describe('SettingsWidget', () => {
         ...showAdvancedSettingsCardsBaseProps,
         isAdvancedCardsVisible: true,
       };
-      jest.spyOn(hooks, 'showAdvancedSettingsCards').mockReturnValue(showAdvancedSettingsCardsProps);
+      jest.mocked(hooks.showAdvancedSettingsCards).mockReturnValue(showAdvancedSettingsCardsProps);
       const modifiedInitialState: PartialEditorState = {
         problem: {
           problemType: null, // non-advanced problem
@@ -127,7 +134,7 @@ describe('SettingsWidget', () => {
         ...showAdvancedSettingsCardsBaseProps,
         isAdvancedCardsVisible: true,
       };
-      jest.spyOn(hooks, 'showAdvancedSettingsCards').mockReturnValue(showAdvancedSettingsCardsProps);
+      jest.mocked(hooks.showAdvancedSettingsCards).mockReturnValue(showAdvancedSettingsCardsProps);
       const modifiedInitialState: PartialEditorState = {
         problem: {
           problemType: null,
@@ -148,7 +155,7 @@ describe('SettingsWidget', () => {
       isLibrary: true,
     };
     test('renders Settings widget page', () => {
-      jest.spyOn(hooks, 'showAdvancedSettingsCards').mockReturnValue(showAdvancedSettingsCardsBaseProps);
+      jest.mocked(hooks.showAdvancedSettingsCards).mockReturnValue(showAdvancedSettingsCardsBaseProps);
       const { container } = renderSettingsWidget(libraryProps);
       expect(container.querySelector('timercard')).not.toBeInTheDocument();
       expect(container.querySelector('resetcard')).not.toBeInTheDocument();
@@ -157,15 +164,53 @@ describe('SettingsWidget', () => {
       expect(screen.getByText('Show advanced settings')).toBeInTheDocument();
     });
 
+    test('shows ScoringCard when upstream sync is enabled', () => {
+      jest.mocked(hooks.useUpstreamSyncForCustomizableFields).mockReturnValue(true);
+      jest.mocked(hooks.showAdvancedSettingsCards).mockReturnValue(showAdvancedSettingsCardsBaseProps);
+      const { container } = renderSettingsWidget(libraryProps);
+      expect(container.querySelector('scoringcard')).toBeInTheDocument();
+    });
+
+    test('hides ScoringCard when upstream sync is disabled', () => {
+      jest.mocked(hooks.useUpstreamSyncForCustomizableFields).mockReturnValue(false);
+      jest.mocked(hooks.showAdvancedSettingsCards).mockReturnValue(showAdvancedSettingsCardsBaseProps);
+      const { container } = renderSettingsWidget(libraryProps);
+      expect(container.querySelector('scoringcard')).not.toBeInTheDocument();
+    });
+
+    test('shows customizable advanced cards when upstream sync is enabled', () => {
+      jest.mocked(hooks.useUpstreamSyncForCustomizableFields).mockReturnValue(true);
+      jest.mocked(hooks.showAdvancedSettingsCards).mockReturnValue({
+        ...showAdvancedSettingsCardsBaseProps,
+        isAdvancedCardsVisible: true,
+      });
+      const { container } = renderSettingsWidget(libraryProps);
+      expect(container.querySelector('showanswercard')).toBeInTheDocument();
+      expect(container.querySelector('resetcard')).toBeInTheDocument();
+      expect(container.querySelector('timercard')).toBeInTheDocument();
+    });
+
+    test('hides customizable advanced cards when upstream sync is disabled', () => {
+      jest.mocked(hooks.useUpstreamSyncForCustomizableFields).mockReturnValue(false);
+      jest.mocked(hooks.showAdvancedSettingsCards).mockReturnValue({
+        ...showAdvancedSettingsCardsBaseProps,
+        isAdvancedCardsVisible: true,
+      });
+      const { container } = renderSettingsWidget(libraryProps);
+      expect(container.querySelector('showanswercard')).not.toBeInTheDocument();
+      expect(container.querySelector('resetcard')).not.toBeInTheDocument();
+      expect(container.querySelector('timercard')).not.toBeInTheDocument();
+    });
+
     test('renders Settings widget page advanced settings visible', () => {
       const showAdvancedSettingsCardsProps = {
         ...showAdvancedSettingsCardsBaseProps,
         isAdvancedCardsVisible: true,
       };
-      jest.spyOn(hooks, 'showAdvancedSettingsCards').mockReturnValue(showAdvancedSettingsCardsProps);
+      jest.mocked(hooks.showAdvancedSettingsCards).mockReturnValue(showAdvancedSettingsCardsProps);
       const { container } = renderSettingsWidget(libraryProps);
       expect(screen.queryByText('Show advanced settings')).not.toBeInTheDocument();
-      expect(container.querySelector('showanswearscard')).not.toBeInTheDocument();
+      expect(container.querySelector('showanswercard')).not.toBeInTheDocument();
       expect(container.querySelector('resetcard')).not.toBeInTheDocument();
       expect(container.querySelector('typecard')).toBeInTheDocument();
       expect(container.querySelector('hintscard')).toBeInTheDocument();
@@ -176,7 +221,7 @@ describe('SettingsWidget', () => {
         ...showAdvancedSettingsCardsBaseProps,
         isAdvancedCardsVisible: true,
       };
-      jest.spyOn(hooks, 'showAdvancedSettingsCards').mockReturnValue(showAdvancedSettingsCardsProps);
+      jest.mocked(hooks.showAdvancedSettingsCards).mockReturnValue(showAdvancedSettingsCardsProps);
       const { container } = renderSettingsWidget({ ...libraryProps, problemType: ProblemTypeKeys.ADVANCED });
       expect(container.querySelector('randomization')).toBeInTheDocument();
     });

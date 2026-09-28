@@ -106,6 +106,11 @@ export const processLicense = (licenseType, licenseDetails) => {
 };
 
 export const apiMethods = {
+  // Fetch the CMS feature flag used to enable customizable Library problem
+  // settings in the authoring UI.
+  fetchAuthoringConfig: ({ studioEndpointUrl }) => get(
+    urls.authoringConfig({ studioEndpointUrl }),
+  ),
   fetchBlockById: ({ blockId, studioEndpointUrl }): Promise<{ data: FieldsResponse }> => get(
     urls.block({ blockId, studioEndpointUrl }),
   ),
