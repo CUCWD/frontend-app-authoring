@@ -36,6 +36,7 @@ const TabsSection = ({
     legacyLibraries: 'legacyLibraries',
     archived: 'archived',
     taxonomies: 'taxonomies',
+    bulkReruns: 'bulk-reruns',
   } as const;
   type TabKeyType = keyof typeof TABS_LIST;
 
@@ -48,6 +49,10 @@ const TabsSection = ({
       return librariesV2Enabled
         ? TABS_LIST.libraries
         : TABS_LIST.legacyLibraries;
+    }
+
+    if (pname.includes('/bulk-reruns')) {
+      return TABS_LIST.bulkReruns;
     }
 
     // Default to courses tab
@@ -140,6 +145,14 @@ const TabsSection = ({
       );
     }
 
+    tabs.push(
+      <Tab
+        key={TABS_LIST.bulkReruns}
+        eventKey={TABS_LIST.bulkReruns}
+        title="Bulk Reruns"
+      />,
+    );
+
     return tabs;
   }, [showNewCourseContainer, isLoadingCourses, migrationFilter, isShowProcessing]);
 
@@ -152,6 +165,8 @@ const TabsSection = ({
       navigate('/libraries');
     } else if (tab === TABS_LIST.taxonomies) {
       navigate('/taxonomies');
+    } else if (tab === TABS_LIST.bulkReruns) {
+      navigate('/bulk-reruns');
     }
     setTabKey(tab);
   };
