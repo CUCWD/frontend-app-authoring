@@ -320,6 +320,7 @@ const CourseOutline = ({ courseId }: CourseOutlineProps) => {
             subtitle={intl.formatMessage(messages.headingSubtitle)}
             headerActions={(
               <CourseOutlineHeaderActionsSlot
+                courseId={courseId}
                 isReIndexShow={isReIndexShow}
                 isSectionsExpanded={isSectionsExpanded}
                 headerNavigationsActions={headerNavigationsActions}
