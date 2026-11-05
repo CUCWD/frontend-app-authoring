@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { ProblemTypeKeys } from '@src/editors/data/constants/problem';
-import { screen, initializeMocks } from '@src/testUtils';
+import { screen, initializeMocks, waitFor } from '@src/testUtils';
 import { editorRender, type PartialEditorState } from '@src/editors/editorTestRender';
 import { mockWaffleFlags } from '@src/data/apiHooks.mock';
 import * as hooks from './hooks';
@@ -73,6 +73,45 @@ describe('SettingsWidget', () => {
   });
 
   describe('behavior', () => {
+    it.each([
+      'https://studio.courses.dev.skilredi.com',
+      'https://studio.courses.skilredi.com',
+    ])('loads library settings configuration from the Redux Studio URL: %s', async (studioEndpointUrl) => {
+      const { axiosMock } = initializeMocks();
+      const configUrl = `${studioEndpointUrl}/api/contentstore/v2/config/`;
+      axiosMock.onGet(configUrl).reply(200, {
+        enable_upstream_sync_for_customizable_fields: true,
+      });
+      jest.mocked(hooks.useUpstreamSyncForCustomizableFields).mockImplementation(
+        jest.requireActual('./hooks').useUpstreamSyncForCustomizableFields,
+      );
+      jest.mocked(hooks.showAdvancedSettingsCards).mockReturnValue(showAdvancedSettingsCardsBaseProps);
+
+      const { container } = renderSettingsWidget({ isLibrary: true }, {
+        learningContextId: 'lib:SKILREDI:CL-EV-ST-CTE-SIS',
+        initialState: { app: { studioEndpointUrl } },
+      });
+
+      await waitFor(() => expect(container.querySelector('scoringcard')).toBeInTheDocument());
+      expect(axiosMock.history.get.map(request => request.url)).toEqual([configUrl]);
+    });
+
+    it('does not request library configuration before the Studio URL is available', () => {
+      const { axiosMock } = initializeMocks();
+      jest.mocked(hooks.useUpstreamSyncForCustomizableFields).mockImplementation(
+        jest.requireActual('./hooks').useUpstreamSyncForCustomizableFields,
+      );
+      jest.mocked(hooks.showAdvancedSettingsCards).mockReturnValue(showAdvancedSettingsCardsBaseProps);
+
+      const { container } = renderSettingsWidget({ isLibrary: true }, {
+        learningContextId: 'lib:SKILREDI:CL-EV-ST-CTE-SIS',
+        initialState: { app: { studioEndpointUrl: null } },
+      });
+
+      expect(axiosMock.history.get).toHaveLength(0);
+      expect(container.querySelector('scoringcard')).not.toBeInTheDocument();
+    });
+
     it('calls showAdvancedSettingsCards when initialized', () => {
       jest.mocked(hooks.showAdvancedSettingsCards).mockReturnValue(showAdvancedSettingsCardsBaseProps);
       renderSettingsWidget();

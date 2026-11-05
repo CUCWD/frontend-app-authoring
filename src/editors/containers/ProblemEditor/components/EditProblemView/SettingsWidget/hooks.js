@@ -52,7 +52,7 @@ export const useUpstreamSyncForCustomizableFields = (isLibrary, studioEndpointUr
   const [enabled, setEnabled] = useState(false);
 
   useEffect(() => {
-    if (!isLibrary) {
+    if (!isLibrary || !studioEndpointUrl) {
       return undefined;
     }
 
