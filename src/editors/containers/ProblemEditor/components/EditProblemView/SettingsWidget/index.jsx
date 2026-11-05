@@ -43,8 +43,8 @@ const SettingsWidget = ({
   const {
     learningContextId,
     isMarkdownEditorEnabledForContext,
-    studioEndpointUrl,
   } = useEditorContext();
+  const studioEndpointUrl = useSelector(selectors.app.studioEndpointUrl);
   const rawMarkdown = useSelector(selectors.problem.rawMarkdown);
   const isMarkdownEditorEnabled = useSelector(selectors.problem.isMarkdownEditorEnabled);
   const showMarkdownEditorButton = isMarkdownEditorEnabledForContext && rawMarkdown;
