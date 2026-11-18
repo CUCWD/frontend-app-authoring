@@ -32,6 +32,7 @@ describe('CourseOutlineHeaderActionsSlot', () => {
 
   test('pluginProps are set correctly', () => {
     const { container } = render(<CourseOutlineHeaderActionsSlot
+      courseId="course-v1:org+course+run"
       sections={[]}
       hasSections={false}
       {...headerNavProps}

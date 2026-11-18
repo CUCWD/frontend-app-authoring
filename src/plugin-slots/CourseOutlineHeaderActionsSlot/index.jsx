@@ -5,6 +5,7 @@ import { PluginSlot } from '@openedx/frontend-plugin-framework';
 import HeaderNavigations from 'CourseAuthoring/course-outline/header-navigations/HeaderNavigations';
 
 const CourseOutlineHeaderActionsSlot = ({
+  courseId,
   headerNavigationsActions,
   isReIndexShow,
   isSectionsExpanded,
@@ -18,6 +19,7 @@ const CourseOutlineHeaderActionsSlot = ({
     id="org.openedx.frontend.authoring.course_outline_header_actions.v1"
     idAliases={['course_outline_header_actions_slot']}
     pluginProps={{
+      courseId,
       isReIndexShow,
       isSectionsExpanded,
       isDisabledReindexButton,
@@ -41,6 +43,7 @@ const CourseOutlineHeaderActionsSlot = ({
 );
 
 CourseOutlineHeaderActionsSlot.propTypes = {
+  courseId: PropTypes.string.isRequired,
   isReIndexShow: PropTypes.bool.isRequired,
   isSectionsExpanded: PropTypes.bool.isRequired,
   isDisabledReindexButton: PropTypes.bool.isRequired,
