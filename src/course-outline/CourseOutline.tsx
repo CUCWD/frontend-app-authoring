@@ -72,6 +72,7 @@ const CourseOutline = ({ courseId }: CourseOutlineProps) => {
   const location = useLocation();
 
   const {
+    refreshCourseOutline,
     courseUsageKey,
     courseName,
     savingStatus,
@@ -321,6 +322,7 @@ const CourseOutline = ({ courseId }: CourseOutlineProps) => {
             headerActions={(
               <CourseOutlineHeaderActionsSlot
                 courseId={courseId}
+                refreshCourseOutline={refreshCourseOutline}
                 isReIndexShow={isReIndexShow}
                 isSectionsExpanded={isSectionsExpanded}
                 headerNavigationsActions={headerNavigationsActions}

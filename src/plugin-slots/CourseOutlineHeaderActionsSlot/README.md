@@ -8,6 +8,7 @@
 ### Plugin Props:
 
 * `courseId` - String. The course identifier for the current course outline.
+* `refreshCourseOutline` - Function. Reloads the outline data after changes.
 * `isReIndexShow` - Boolean.
 * `isSectionsExpanded` - Boolean.
 * `headerNavigationsActions` - Object. See Proptypes definition in the component for details.

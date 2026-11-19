@@ -62,9 +62,11 @@ import {
  * @param {string} courseId - ID of the course
  * @returns {Object} - Object containing fetch course outline index query success or failure status
  */
-export function fetchCourseOutlineIndexQuery(courseId: string): (dispatch: any) => Promise<void> {
+export function fetchCourseOutlineIndexQuery(courseId: string, silent = false): (dispatch: any) => Promise<void> {
   return async (dispatch) => {
-    dispatch(updateOutlineIndexLoadingStatus({ status: RequestStatus.IN_PROGRESS }));
+    if (!silent) {
+      dispatch(updateOutlineIndexLoadingStatus({ status: RequestStatus.IN_PROGRESS }));
+    }
 
     try {
       const outlineIndex = await getCourseOutlineIndex(courseId);
@@ -88,6 +90,7 @@ export function fetchCourseOutlineIndexQuery(courseId: string): (dispatch: any) 
 
       dispatch(updateOutlineIndexLoadingStatus({ status: RequestStatus.SUCCESSFUL }));
     } catch (error: any) {
+      if (silent) { throw error; }
       if (error.response && error.response.status === 403) {
         dispatch(updateOutlineIndexLoadingStatus({
           status: RequestStatus.DENIED,

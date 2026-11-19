@@ -364,6 +364,7 @@ const useCourseOutline = ({ courseId }) => {
   }, [reIndexLoadingStatus]);
 
   return {
+    refreshCourseOutline: () => dispatch(fetchCourseOutlineIndexQuery(courseId, true)),
     courseUsageKey: courseStructure?.id,
     courseActions,
     savingStatus,

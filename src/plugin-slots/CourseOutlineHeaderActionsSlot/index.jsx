@@ -6,6 +6,7 @@ import HeaderNavigations from 'CourseAuthoring/course-outline/header-navigations
 
 const CourseOutlineHeaderActionsSlot = ({
   courseId,
+  refreshCourseOutline,
   headerNavigationsActions,
   isReIndexShow,
   isSectionsExpanded,
@@ -20,6 +21,7 @@ const CourseOutlineHeaderActionsSlot = ({
     idAliases={['course_outline_header_actions_slot']}
     pluginProps={{
       courseId,
+      refreshCourseOutline,
       isReIndexShow,
       isSectionsExpanded,
       isDisabledReindexButton,
@@ -44,6 +46,7 @@ const CourseOutlineHeaderActionsSlot = ({
 
 CourseOutlineHeaderActionsSlot.propTypes = {
   courseId: PropTypes.string.isRequired,
+  refreshCourseOutline: PropTypes.func,
   isReIndexShow: PropTypes.bool.isRequired,
   isSectionsExpanded: PropTypes.bool.isRequired,
   isDisabledReindexButton: PropTypes.bool.isRequired,
